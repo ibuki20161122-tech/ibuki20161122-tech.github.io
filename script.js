@@ -8,7 +8,7 @@ const words = [
 ];
 
 // =====================
-// ローマ字テーブル
+// ローマ字
 // =====================
 const romaMap = {
   "あ":["a"],"い":["i","yi"],"う":["u","wu"],"え":["e"],"お":["o"],
@@ -28,7 +28,7 @@ const romaMap = {
   "ぱ":["pa"],"ぴ":["pi"],"ぷ":["pu"],"ぺ":["pe"],"ぽ":["po"]
 };
 
-// 拗音
+// 拗音（ここが超重要）
 const digraph = {
   "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"],
   "しゃ":["sha","sya"],"しゅ":["shu","syu"],"しょ":["sho","syo"],
@@ -38,11 +38,13 @@ const digraph = {
   "みゃ":["mya"],"みゅ":["myu"],"みょ":["myo"],
   "りゃ":["rya"],"りゅ":["ryu"],"りょ":["ryo"],
   "ぎゃ":["gya"],"ぎゅ":["gyu"],"ぎょ":["gyo"],
-  "じゃ":["ja","jya","zya"],"じゅ":["ju","jyu","zyu"],"じょ":["jo","jyo","zyo"]
+  "じゃ":["ja","jya","zya"],"じゅ":["ju","jyu","zyu"],"じょ":["jo","jyo","zyo"],
+  "びゃ":["bya"],"びゅ":["byu"],"びょ":["byo"], // ⭐これで byouin 可能
+  "ぴゃ":["pya"],"ぴゅ":["pyu"],"ぴょ":["pyo"]
 };
 
 // =====================
-// かな→ローマ字
+// かな → ローマ字
 // =====================
 function kanaToRoma(kana) {
   let results = [""];
@@ -50,7 +52,7 @@ function kanaToRoma(kana) {
   for (let i = 0; i < kana.length; i++) {
     let c = kana[i];
 
-    // 小さい「っ」
+    // 小さいっ
     if (c === "っ") {
       let next = kana[i + 1];
       let nextRoma = getRoma(next);
@@ -58,7 +60,7 @@ function kanaToRoma(kana) {
 
       results.forEach(r => {
         nextRoma.forEach(n => {
-          if (n) temp.push(r + n[0]);
+          if (n) temp.push(r + n[0]); // 子音重ね
         });
         temp.push(r + "xtu");
         temp.push(r + "ltu");
@@ -81,7 +83,7 @@ function kanaToRoma(kana) {
 
   results = expandN(results);
 
-  return [...new Set(results)].slice(0, 200); // 重さ対策
+  return [...new Set(results)].slice(0, 200);
 }
 
 function getRoma(char) {
@@ -94,7 +96,7 @@ function combine(a, b) {
   return res;
 }
 
-// ん拡張
+// 「ん」強化
 function expandN(list) {
   let res = [];
 
@@ -122,7 +124,6 @@ let combo = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let timer;
 
-// DOM
 const jpWord = document.getElementById("jpWord");
 const romaWord = document.getElementById("romaWord");
 const input = document.getElementById("input");
@@ -158,9 +159,7 @@ function missSound() {
 function showEffect(text) {
   effect.textContent = text;
   effect.style.opacity = 1;
-  setTimeout(() => {
-    effect.style.opacity = 0;
-  }, 300);
+  setTimeout(() => effect.style.opacity = 0, 300);
 }
 
 // ⌨️ スペース開始
