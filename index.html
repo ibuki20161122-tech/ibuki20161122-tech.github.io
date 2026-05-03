@@ -3,28 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>タイピングゲームDX</title>
+<title>Typing Game DX</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="game">
-    <h1>⌨️ タイピングゲームDX</h1>
+<div class="container">
+  <h1>⌨️ Typing Game DX</h1>
 
-    <p id="jpWord">スタートを押してね</p>
+  <div class="card">
+    <p id="jpWord">スペースキーでスタート</p>
     <p id="romaWord"></p>
 
     <input type="text" id="input" placeholder="ローマ字で入力" disabled>
 
-    <div class="info">
-        <span>スコア: <span id="score">0</span></span>
-        <span>ハイスコア: <span id="highScore">0</span></span><br>
-        <span>時間: <span id="time">30</span></span>
-        <span>レベル: <span id="level">1</span></span><br>
-        <span>コンボ: <span id="combo">0</span></span>
+    <div class="stats">
+      <div>🏆 <span id="score">0</span></div>
+      <div>👑 <span id="highScore">0</span></div>
+      <div>⏱ <span id="time">30</span></div>
+      <div>📈 <span id="level">1</span></div>
+      <div>🔥 <span id="combo">0</span></div>
     </div>
 
     <button onclick="startGame()">スタート</button>
+  </div>
+
+  <p class="hint">スペースキーでも開始できます</p>
 </div>
 
 <script src="script.js"></script>
