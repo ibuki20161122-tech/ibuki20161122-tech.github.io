@@ -1,0 +1,42 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+.game {
+    margin-top: 40px;
+}
+
+#jpWord {
+    font-size: 30px;
+    margin: 10px;
+}
+
+#romaWord {
+    font-size: 18px;
+    color: #aaa;
+}
+
+input {
+    padding: 12px;
+    font-size: 18px;
+    width: 80%;
+    max-width: 320px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 25px;
+    font-size: 18px;
+    background: #00c853;
+    border: none;
+    border-radius: 5px;
+    color: white;
+}
+
+.info {
+    margin-top: 20px;
+    font-size: 16px;
+}
