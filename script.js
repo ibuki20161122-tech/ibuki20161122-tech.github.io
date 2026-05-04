@@ -24,8 +24,10 @@ const romaMap = {
  "ば":["ba"],"び":["bi"],"ぶ":["bu"],"べ":["be"],"ぼ":["bo"]
 };
 
+// 拗音
 const digraph = {
  "しゃ":["sha","sya"],"しゅ":["shu","syu"],"しょ":["sho","syo"],
+ "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"], // ⭐kyou対応
  "びゃ":["bya"],"びゅ":["byu"],"びょ":["byo"]
 };
 
@@ -71,24 +73,19 @@ function combine(a,b){
 }
 
 // =====================
-// ゲーム変数
+// ゲーム
 // =====================
 let current = {};
 let score = 0;
 let combo = 0;
-let highScore = localStorage.getItem("highScore") || 0;
 
-// DOM
 const input = document.getElementById("input");
 const jp = document.getElementById("jpWord");
 const roma = document.getElementById("romaWord");
 const effect = document.getElementById("effect");
 
-// 初期表示
-document.getElementById("highScore").textContent = highScore;
-
 // =====================
-// 開始
+// スタート
 // =====================
 document.addEventListener("keydown",e=>{
  if(e.code==="Space"){
@@ -110,7 +107,7 @@ function startGame(){
 }
 
 // =====================
-// 次の問題
+// 次の単語
 // =====================
 function nextWord(){
  let k = words[Math.floor(Math.random()*words.length)];
@@ -123,16 +120,18 @@ function nextWord(){
 }
 
 // =====================
-// 入力
+// 入力処理（ここが重要）
 // =====================
 input.addEventListener("input",()=>{
- let val = input.value.toLowerCase(); // ⭐大文字対応
+ let val = input.value.toLowerCase();
 
- let p = current.patterns.find(x=>x.startsWith(val));
+ // ⭐一番近いパターンを探す
+ let p = current.patterns.find(x => x.startsWith(val));
 
  if(p){
    showColored(val,p);
 
+   // 完全一致
    if(p === val){
      combo++;
      score += 10 + combo * 2;
@@ -142,9 +141,13 @@ input.addEventListener("input",()=>{
      input.value="";
      nextWord();
    }
+
  }else{
+   // ⭐ここが改善ポイント
    combo = 0;
-   // ⭐リセットしない（重要）
+
+   // 「1文字戻す」だけにする
+   input.value = val.slice(0,-1);
  }
 
  updateUI();
@@ -181,25 +184,9 @@ function popEffect(){
 }
 
 // =====================
-// UI更新（バグ修正ポイント）
+// UI更新
 // =====================
 function updateUI(){
  document.getElementById("score").textContent = score;
  document.getElementById("combo").textContent = combo;
-}
-
-// =====================
-// ランキング（ローカル）
-// =====================
-function saveScore(s){
- let r = JSON.parse(localStorage.getItem("rank")) || [];
- r.push(s);
- r.sort((a,b)=>b-a);
- r = r.slice(0,5);
- localStorage.setItem("rank",JSON.stringify(r));
-}
-
-function showRanking(){
- let r = JSON.parse(localStorage.getItem("rank")) || [];
- alert("🏆ランキング\n" + r.map((s,i)=>`${i+1}位: ${s}`).join("\n"));
 }
