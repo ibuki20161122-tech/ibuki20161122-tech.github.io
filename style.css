@@ -6,9 +6,7 @@ body {
   color: white;
 }
 
-.container {
-  margin-top: 40px;
-}
+.container { margin-top: 40px; }
 
 .card {
   background: rgba(255,255,255,0.1);
@@ -20,14 +18,7 @@ body {
   margin: auto;
 }
 
-#jpWord {
-  font-size: 30px;
-}
-
-#romaWord {
-  color: #ccc;
-  font-size: 14px;
-}
+#jpWord { font-size: 30px; }
 
 input {
   padding: 12px;
@@ -51,7 +42,27 @@ button {
   border: none;
   border-radius: 8px;
   color: white;
-  cursor: pointer;
+}
+
+/* 色分け */
+.correct {
+  color: #00e676;
+  text-shadow: 0 0 8px #00e676, 0 0 15px #00e676;
+  animation: glowPop 0.2s;
+}
+
+.wrong {
+  color: #ff5252;
+}
+
+.remaining {
+  color: #ccc;
+}
+
+/* アニメーション */
+@keyframes glowPop {
+  0% { transform: scale(1.4); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* エフェクト */
@@ -63,5 +74,4 @@ button {
   font-size: 40px;
   opacity: 0;
   color: #00e676;
-  transition: 0.3s;
 }
