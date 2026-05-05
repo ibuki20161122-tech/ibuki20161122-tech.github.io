@@ -4,37 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Typing Game DX</title>
-
-<!-- フォント -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-<div class="container">
 
-  <h1>⌨️ Typing Game DX</h1>
+<h1>⌨️ Typing Game DX</h1>
 
-  <div class="card">
-    <p id="jpWord">スペースキーでスタート</p>
-    <p id="romaWord"></p>
+<p id="jpWord">スペースでスタート</p>
+<p id="romaWord"></p>
 
-    <input type="text" id="input" placeholder="ローマ字で入力" disabled>
+<input id="input" disabled>
 
-    <div class="stats">
-      <div>🏆 <span id="score">0</span></div>
-      <div>⏱ <span id="time">30</span></div>
-      <div>📈 <span id="level">1</span></div>
-      <div>🔥 <span id="combo">0</span></div>
-    </div>
-
-    <button onclick="startGame()">スタート</button>
-  </div>
-
-  <p class="hint">スペースキーでも開始できます</p>
-
+<div>
+🏆 <span id="score">0</span>
+⏱ <span id="time">30</span>
+📈 <span id="level">1</span>
+🔥 <span id="combo">0</span>
 </div>
+
+<h2>🏆 ランキング</h2>
+<ol id="ranking"></ol>
+
+<button onclick="startGame()">スタート</button>
 
 <script src="script.js"></script>
 </body>
