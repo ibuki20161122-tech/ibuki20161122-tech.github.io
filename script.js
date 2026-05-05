@@ -7,11 +7,11 @@ const words = [
   "しゃしん","じてんしゃ","がっこう","きょう","しゅくだい",
   "びょういん","えんぴつ","けしごむ","でんしゃ","せんせい",
   "ゆうえんち","どうぶつえん","しんかんせん","としょかん",
-  "ぷろぐらみんぐ","こんぴゅーたー","いんたーねっと"
+  "ぷろぐらみんぐ","こんぴゅーたー","いんたーねっと","すーぱー"
 ];
 
 // =====================
-// ローマ字
+// ローマ字マップ
 // =====================
 const romaMap = {
  "あ":["a"],"い":["i"],"う":["u"],"え":["e"],"お":["o"],
@@ -25,18 +25,48 @@ const romaMap = {
  "ら":["ra"],"り":["ri"],"る":["ru"],"れ":["re"],"ろ":["ro"],
  "わ":["wa"],"を":["wo"],
  "ん":["n","nn","xn","n'"],
+ "ー":["-"],
  "が":["ga"],"ぎ":["gi"],"ぐ":["gu"],"げ":["ge"],"ご":["go"],
  "ざ":["za"],"じ":["ji","zi"],"ず":["zu"],"ぜ":["ze"],"ぞ":["zo"],
  "ば":["ba"],"び":["bi"],"ぶ":["bu"],"べ":["be"],"ぼ":["bo"]
 };
 
-// 拗音
 const digraph = {
  "しゃ":["sha","sya"],"しゅ":["shu","syu"],"しょ":["sho","syo"],
  "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"],
  "ちゃ":["cha","tya","cya"],"ちゅ":["chu","tyu","cyu"],"ちょ":["cho","tyo","cyo"],
  "びゃ":["bya"],"びゅ":["byu"],"びょ":["byo"]
 };
+
+// =====================
+// 音
+// =====================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTypeSound(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "square";
+  osc.frequency.value = 500;
+
+  gain.gain.value = 0.05;
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.05);
+}
+
+// =====================
+// 振動
+// =====================
+function vibrate(){
+  if(navigator.vibrate){
+    navigator.vibrate(20);
+  }
+}
 
 // =====================
 // かな→ローマ字
@@ -47,7 +77,6 @@ function kanaToRoma(kana){
  for(let i=0;i<kana.length;i++){
   let c=kana[i];
 
-  // っ
   if(c==="っ"){
     let next=romaMap[kana[i+1]]||[""];
     let temp=[];
@@ -60,7 +89,19 @@ function kanaToRoma(kana){
     continue;
   }
 
-  // 拗音
+  if(c==="ー"){
+    let temp=[];
+    res.forEach(r=>{
+      let last=r.slice(-1);
+      if("aeiou".includes(last)){
+        temp.push(r+last);
+      }
+      temp.push(r+"-");
+    });
+    res=temp;
+    continue;
+  }
+
   let pair=kana[i]+kana[i+1];
   if(digraph[pair]){
     res=combine(res,digraph[pair]);
@@ -81,36 +122,33 @@ function combine(a,b){
 }
 
 // =====================
-// 自然なローマ字選択
+// マッチ選択（改良版）
 // =====================
-function getBestPattern(list){
- return list.sort((a,b)=>scorePattern(a)-scorePattern(b))[0];
+function getBestMatch(patterns, input){
+ return patterns.sort((a,b)=>{
+   return matchScore(a,input)-matchScore(b,input);
+ })[0];
 }
 
-function scorePattern(str){
- let score = 0;
- score += str.length;
- if(str.includes("xn")) score += 5;
- if(str.includes("xtu")) score += 3;
- if(str.includes("ltu")) score += 3;
- if(str.includes("si")) score += 1;
- if(str.includes("ti")) score += 1;
- if(str.includes("tu")) score += 1;
+function matchScore(p,input){
+ let score = Math.abs(p.length-input.length);
+
+ let match=0;
+ for(let i=0;i<input.length;i++){
+   if(p[i]===input[i]) match++;
+ }
+ score -= match*2;
+
+ if(p.includes("xn")) score+=5;
  return score;
 }
 
 // =====================
 // 変数
 // =====================
-let current = {};
-let currentDisplay = "";
-let score = 0;
-let combo = 0;
-let time = 30;
-let level = 1;
-let timer;
+let current={}, currentDisplay="";
+let score=0, combo=0, time=30, level=1, timer;
 
-// DOM
 const input = document.getElementById("input");
 const jp = document.getElementById("jpWord");
 const roma = document.getElementById("romaWord");
@@ -126,10 +164,7 @@ document.addEventListener("keydown",e=>{
 });
 
 function startGame(){
- score=0;
- combo=0;
- time=30;
- level=1;
+ score=0; combo=0; time=30; level=1;
 
  input.disabled=false;
  input.value="";
@@ -139,58 +174,54 @@ function startGame(){
  updateUI();
 
  clearInterval(timer);
- timer = setInterval(updateTime,1000);
+ timer=setInterval(updateTime,1000);
 }
 
 // =====================
 // 次の単語
 // =====================
 function nextWord(){
- let k = words[Math.floor(Math.random()*words.length)];
- let patterns = kanaToRoma(k);
+ let k=words[Math.floor(Math.random()*words.length)];
+ let patterns=kanaToRoma(k);
 
- current = {kana:k, patterns};
+ current={kana:k,patterns};
 
- currentDisplay = getBestPattern(patterns);
+ currentDisplay=getBestMatch(patterns,"");
 
- jp.textContent = k;
- roma.innerHTML = `<span class="remaining">${currentDisplay}</span>`;
+ jp.textContent=k;
+ roma.innerHTML=`<span class="remaining">${currentDisplay}</span>`;
 }
 
 // =====================
-// 入力処理（神機能）
+// 入力
 // =====================
 input.addEventListener("input",()=>{
- let val = input.value.toLowerCase();
+ let val=input.value.toLowerCase();
 
- let validPatterns = current.patterns.filter(p => p.startsWith(val));
+ playTypeSound();
+ vibrate();
 
- // 「ん」途中許可
- if(validPatterns.length === 0 && val.endsWith("n")){
-   return;
- }
+ let valid=current.patterns.filter(p=>p.startsWith(val));
 
- if(validPatterns.length > 0){
+ if(valid.length===0 && val.endsWith("n")) return;
 
-   // ⭐プレイヤーに合わせる
-   let match = validPatterns.find(p => p.startsWith(val));
-   if(match){
-     currentDisplay = match;
-   }
+ if(valid.length>0){
 
-   showColored(val, currentDisplay);
+   let match=getBestMatch(valid,val);
+   currentDisplay=match;
 
-   if(validPatterns.includes(val)){
+   showColored(val,currentDisplay);
+
+   if(valid.includes(val) || valid.some(p=>p===val+"-")){
      combo++;
 
-     let add = 10 + combo * 2;
-
-     if(current.kana.length >= 6){
-       add += 10;
+     let add=10+combo*2;
+     if(current.kana.length>=6){
+       add+=10;
        showEffect("💥 BONUS!");
      }
 
-     score += add;
+     score+=add;
 
      updateLevel();
      popEffect();
@@ -200,24 +231,24 @@ input.addEventListener("input",()=>{
    }
 
  }else{
-   combo = 0;
-   input.value = val.slice(0,-1);
+   combo=0;
+   input.value=val.slice(0,-1);
  }
 
  updateUI();
 });
 
 // =====================
-// 色表示（コンボで金）
+// 表示
 // =====================
 function showColored(inputStr,correct){
  let html="";
- const isGold = combo >= 10;
+ let gold=combo>=10;
 
  for(let i=0;i<correct.length;i++){
   if(i<inputStr.length){
     if(inputStr[i]===correct[i]){
-      html+=`<span class="${isGold ? 'gold' : 'correct'}">${correct[i]}</span>`;
+      html+=`<span class="${gold?"gold":"correct"}">${correct[i]}</span>`;
     }else{
       html+=`<span class="wrong">${correct[i]}</span>`;
     }
@@ -230,59 +261,44 @@ function showColored(inputStr,correct){
 }
 
 // =====================
-// ランダムエフェクト
+// エフェクト
 // =====================
 function popEffect(){
-  const el = document.createElement("div");
+ let el=document.createElement("div");
+ el.textContent="✨ "+combo;
+ el.style.position="fixed";
+ el.style.left=(40+Math.random()*20)+"%";
+ el.style.top=(30+Math.random()*20)+"%";
+ el.style.color="#00e676";
 
-  el.textContent = "✨ " + combo;
-  el.style.position = "fixed";
-  el.style.left = (40 + Math.random()*20) + "%";
-  el.style.top = (30 + Math.random()*20) + "%";
-  el.style.fontSize = "30px";
-  el.style.color = "#00e676";
-  el.style.pointerEvents = "none";
+ document.body.appendChild(el);
 
-  document.body.appendChild(el);
-
-  setTimeout(()=>{
-    el.style.transition="0.5s";
-    el.style.opacity="0";
-    el.style.top = "20%";
-  },10);
-
-  setTimeout(()=>el.remove(),500);
+ setTimeout(()=>{el.style.opacity=0},300);
+ setTimeout(()=>el.remove(),500);
 }
 
-// =====================
-// テキストエフェクト
-// =====================
-function showEffect(text){
-  const el = document.createElement("div");
+function showEffect(t){
+ let el=document.createElement("div");
+ el.textContent=t;
+ el.style.position="fixed";
+ el.style.left="50%";
+ el.style.top="25%";
+ el.style.transform="translate(-50%,-50%)";
+ el.style.color="gold";
 
-  el.textContent = text;
-  el.style.position = "fixed";
-  el.style.left = "50%";
-  el.style.top = "25%";
-  el.style.transform = "translate(-50%,-50%)";
-  el.style.fontSize = "35px";
-  el.style.color = "#ffd700";
+ document.body.appendChild(el);
 
-  document.body.appendChild(el);
-
-  setTimeout(()=>el.style.opacity="0",500);
-  setTimeout(()=>el.remove(),800);
+ setTimeout(()=>el.remove(),700);
 }
 
 // =====================
 // レベル
 // =====================
 function updateLevel(){
- let newLevel = Math.floor(score / 100) + 1;
-
- if(newLevel > level){
-   level = newLevel;
-   time += 3;
+ let newL=Math.floor(score/100)+1;
+ if(newL>level){
+   level=newL;
+   time+=3;
    showEffect("LEVEL UP!");
  }
 }
@@ -303,11 +319,11 @@ function endGame(){
 }
 
 // =====================
-// UI更新
+// UI
 // =====================
 function updateUI(){
- document.getElementById("score").textContent = score;
- document.getElementById("combo").textContent = combo;
- document.getElementById("level").textContent = level;
- document.getElementById("time").textContent = time;
+ document.getElementById("score").textContent=score;
+ document.getElementById("combo").textContent=combo;
+ document.getElementById("level").textContent=level;
+ document.getElementById("time").textContent=time;
 }
