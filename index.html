@@ -15,25 +15,29 @@
 
 <!-- ゲーム -->
 <div id="gameScreen" class="hidden">
-
-  <div id="hud">
-    🏆 <span id="score">0</span>
-    🔥 <span id="combo">0</span>
-    ⏱ <span id="time">30.0</span>
-  </div>
-
   <p id="jpWord"></p>
   <p id="romaWord"></p>
 
-  <input id="input" type="text" disabled>
+  <input id="input" disabled>
 
+  <div>
+    🏆 <span id="score">0</span>
+    ⏱ <span id="time">30</span>
+    📈 <span id="level">1</span>
+    🔥 <span id="combo">0</span>
+  </div>
+
+  <div id="comboEffect"></div>
+
+  <h3>ランキング</h3>
+  <ol id="ranking"></ol>
 </div>
 
 <!-- 結果 -->
 <div id="result" class="hidden">
   <h2>RESULT</h2>
   <p id="finalScore"></p>
-  <button onclick="location.reload()">RESTART</button>
+  <button onclick="closeResult()">閉じる</button>
 </div>
 
 <script src="script.js"></script>
