@@ -2,70 +2,48 @@ body{
   margin:0;
   background:black;
   color:#0ff;
-  font-family:"Arial Black";
+  font-family:sans-serif;
   text-align:center;
   overflow:hidden;
-  transition:0.5s;
 }
 
 .hidden{display:none;}
 
-/* タイトル（白） */
+/* タイトル */
 #titleScreen{
-  background:white;
-  color:black;
   height:100vh;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
+  background:white;
+  color:black;
 }
 
-/* ゲーム */
+/* HUD */
+#hud{
+  margin-top:10px;
+  font-size:20px;
+}
+
+/* 単語 */
 #jpWord{
-  font-size:70px;
-  text-shadow:0 0 30px #0ff;
+  font-size:60px;
+  margin-top:80px;
 }
 
 #romaWord{
+  font-size:25px;
   opacity:0.6;
 }
 
 /* 入力 */
 input{
-  font-size:30px;
-  background:black;
+  margin-top:30px;
+  font-size:25px;
+  padding:10px;
   border:2px solid #0ff;
-  color:#0ff;
-  box-shadow:0 0 20px #0ff;
-}
-
-/* スタート演出 */
-#startOverlay{
-  position:absolute;
-  width:100%;
-  height:100vh;
   background:black;
   color:#0ff;
-  font-size:100px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-/* 爆発 */
-.particle{
-  position:absolute;
-  width:6px;
-  height:6px;
-  background:#0ff;
-  border-radius:50%;
-  animation:boom 0.6s forwards;
-}
-
-@keyframes boom{
-  to{
-    transform:translate(var(--x),var(--y));
-    opacity:0;
-  }
+  outline:none;
 }
