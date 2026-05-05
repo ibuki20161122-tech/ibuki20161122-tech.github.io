@@ -1,106 +1,206 @@
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#0b0f14;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+const VERSION="v3.0.1";
+document.getElementById("version").textContent=VERSION;
+
+// 初期状態（バグ防止）
+window.addEventListener("load",()=>{
+ document.getElementById("result").classList.add("hidden");
+ document.getElementById("titleScreen").classList.remove("hidden");
+ document.getElementById("gameScreen").classList.add("hidden");
+});
+
+// 単語
+const wordLevels=[
+ ["ねこ","いぬ","すし"],
+ ["りんご","えんぴつ"],
+ ["しゅくだい","せんせい"],
+ ["ぷろぐらみんぐ","こんぴゅーたー"]
+];
+
+// ローマ字
+const romaMap={
+ "あ":["a"],"い":["i"],"う":["u"],"え":["e"],"お":["o"],
+ "か":["ka"],"き":["ki"],"く":["ku"],"け":["ke"],"こ":["ko"],
+ "さ":["sa"],"し":["shi","si"],"す":["su"],"せ":["se"],"そ":["so"],
+ "た":["ta"],"ち":["chi","ti"],"つ":["tsu","tu"],"て":["te"],"と":["to"],
+ "な":["na"],"に":["ni"],"ぬ":["nu"],"ね":["ne"],"の":["no"],
+ "は":["ha"],"ひ":["hi"],"ふ":["fu"],"へ":["he"],"ほ":["ho"],
+ "ま":["ma"],"み":["mi"],"む":["mu"],"め":["me"],"も":["mo"],
+ "や":["ya"],"ゆ":["yu"],"よ":["yo"],
+ "ら":["ra"],"り":["ri"],"る":["ru"],"れ":["re"],"ろ":["ro"],
+ "わ":["wa"],"を":["wo"],
+ "ん":["n","nn"],
+ "ぱ":["pa"],"ぴ":["pi"],"ぷ":["pu"],"ぺ":["pe"],"ぽ":["po"]
+};
+
+const digraph={
+ "しゃ":["sha","sya"],"しゅ":["shu","syu"],"しょ":["sho","syo"],
+ "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"],
+ "ぴゃ":["pya"],"ぴゅ":["pyu"],"ぴょ":["pyo"]
+};
+
+function kanaToRoma(k){
+ let res=[""];
+ for(let i=0;i<k.length;i++){
+  let c=k[i];
+
+  if(c==="ー"){
+    let tmp=[];
+    res.forEach(r=>{
+      let last=r.slice(-1);
+      if("aeiou".includes(last)) tmp.push(r+last);
+    });
+    res=tmp;
+    continue;
+  }
+
+  let pair=k[i]+k[i+1];
+  if(digraph[pair]){
+    res=combine(res,digraph[pair]);
+    i++;
+    continue;
+  }
+
+  res=combine(res,romaMap[c]||[""]);
+ }
+ return res;
 }
 
-/* タイトル */
-#titleScreen{
-  position:fixed;
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:#000;
+function combine(a,b){
+ let r=[];
+ a.forEach(x=>b.forEach(y=>r.push(x+y)));
+ return r;
 }
 
-.title{
-  font-size:4rem;
-  color:#00eaff;
-  text-shadow:0 0 40px #00eaff;
+// ゲーム
+let score=0,combo=0,time=30,level=1,timer,lastWord="";
+let current={},display="";
+
+const input=document.getElementById("input");
+const jp=document.getElementById("jpWord");
+const roma=document.getElementById("romaWord");
+
+// スペース開始
+document.addEventListener("keydown",e=>{
+ if(e.code==="Space"){
+   if(!titleScreen.classList.contains("hidden")){
+     titleScreen.classList.add("hidden");
+     gameScreen.classList.remove("hidden");
+     startGame();
+   }
+ }
+});
+
+function startGame(){
+ score=0;combo=0;time=30;level=1;
+ input.disabled=false;
+ input.value="";
+ input.focus();
+ nextWord();
+ clearInterval(timer);
+ timer=setInterval(updateTime,1000);
 }
 
-.subtitle{
-  animation:blink 1s infinite;
+function updateLevel(){
+ level=Math.floor(score/50)+1;
+ if(level>wordLevels.length) level=wordLevels.length;
 }
 
-@keyframes blink{
-  50%{opacity:0.3;}
+function nextWord(){
+ updateLevel();
+ let pool=wordLevels[level-1];
+ let k;
+ do{
+  k=pool[Math.floor(Math.random()*pool.length)];
+ }while(k===lastWord);
+ lastWord=k;
+
+ let p=kanaToRoma(k);
+ current={kana:k,patterns:p};
+ display=p[0];
+
+ jp.textContent=k;
+ show("",display);
 }
 
-/* ゲーム */
-.container{
-  width:800px;
-  padding:40px;
-  background:rgba(255,255,255,0.05);
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,255,255,0.2);
-  text-align:center;
+// 入力
+input.addEventListener("input",()=>{
+ let val=input.value.toLowerCase();
+ let valid=current.patterns.filter(p=>p.startsWith(val));
+
+ if(valid.length>0){
+   display=valid[0];
+   show(val,display);
+
+   if(valid.includes(val)){
+     combo++;
+     score+=10+combo*2;
+     input.value="";
+     nextWord();
+   }
+ }else{
+   combo=0;
+   input.value=val.slice(0,-1);
+ }
+
+ updateUI();
+});
+
+function show(inputStr,correct){
+ let html="";
+ let gold=combo>=10;
+
+ for(let i=0;i<correct.length;i++){
+  let cls="remaining";
+  if(i<inputStr.length) cls=gold?"gold":"correct";
+  html+=`<span class="${cls}">${correct[i]}</span>`;
+ }
+ roma.innerHTML=html;
 }
 
-#jpWord{font-size:2.5rem;}
-#romaWord{font-size:2rem;letter-spacing:3px;min-height:50px;}
-
-.correct{color:#00ff88;text-shadow:0 0 20px #00ff88;}
-.gold{color:gold;text-shadow:0 0 20px gold;}
-.remaining{color:#555;}
-.wrong{color:red;}
-
-#romaWord span{transition:0.1s;}
-
-#input{
-  width:100%;
-  font-size:1.8rem;
-  padding:15px;
-  margin-top:20px;
-  border-radius:10px;
-  border:none;
-  background:#111;
-  color:white;
+function updateTime(){
+ time--;
+ if(time<=0) endGame();
+ updateUI();
 }
 
-/* ランキング */
-#ranking{list-style:none;padding:0;}
-#ranking li{
-  background:rgba(255,255,255,0.1);
-  margin:5px;
-  padding:8px;
-  border-radius:8px;
+function endGame(){
+ clearInterval(timer);
+ input.disabled=true;
+ saveScore(score);
+ document.getElementById("finalScore").textContent="Score: "+score;
+ document.getElementById("result").classList.remove("hidden");
 }
 
-/* 結果 */
-#result{
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.8);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+function closeResult(){
+ document.getElementById("result").classList.add("hidden");
+ document.getElementById("titleScreen").classList.remove("hidden");
+ document.getElementById("gameScreen").classList.add("hidden");
 }
 
-#result.hidden{
-  display:none !important;
+function saveScore(s){
+ let d=JSON.parse(localStorage.getItem("rank")||"[]");
+ d.push(s);
+ d.sort((a,b)=>b-a);
+ d=d.slice(0,5);
+ localStorage.setItem("rank",JSON.stringify(d));
+ loadRanking();
 }
 
-.resultBox{
-  background:#111;
-  padding:30px;
-  border-radius:15px;
+function loadRanking(){
+ let d=JSON.parse(localStorage.getItem("rank")||"[]");
+ let list=document.getElementById("ranking");
+ list.innerHTML="";
+ d.forEach(v=>{
+  let li=document.createElement("li");
+  li.textContent=v;
+  list.appendChild(li);
+ });
 }
+loadRanking();
 
-.hidden{display:none;}
-
-#version{
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  opacity:0.6;
+function updateUI(){
+ document.getElementById("score").textContent=score;
+ document.getElementById("combo").textContent=combo;
+ document.getElementById("time").textContent=time;
+ document.getElementById("level").textContent=level;
 }
