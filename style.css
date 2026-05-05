@@ -25,23 +25,17 @@ body{
   font-size:4rem;
   color:#00eaff;
   text-shadow:0 0 40px #00eaff;
-  animation:glow 2s infinite alternate;
 }
 
 .subtitle{
   animation:blink 1s infinite;
 }
 
-@keyframes glow{
-  from{ text-shadow:0 0 10px #00eaff;}
-  to{ text-shadow:0 0 60px #00eaff;}
-}
-
 @keyframes blink{
   50%{opacity:0.3;}
 }
 
-/* コンテナ */
+/* ゲーム */
 .container{
   width:800px;
   padding:40px;
@@ -51,7 +45,6 @@ body{
   text-align:center;
 }
 
-/* テキスト */
 #jpWord{font-size:2.5rem;}
 #romaWord{font-size:2rem;letter-spacing:3px;min-height:50px;}
 
@@ -62,7 +55,6 @@ body{
 
 #romaWord span{transition:0.1s;}
 
-/* 入力 */
 #input{
   width:100%;
   font-size:1.8rem;
@@ -93,13 +85,17 @@ body{
   justify-content:center;
   align-items:center;
 }
+
+#result.hidden{
+  display:none !important;
+}
+
 .resultBox{
   background:#111;
   padding:30px;
   border-radius:15px;
 }
 
-/* その他 */
 .hidden{display:none;}
 
 #version{
