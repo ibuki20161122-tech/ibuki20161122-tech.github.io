@@ -66,6 +66,25 @@ body{
   color:white;
 }
 
+/* コンボ演出 */
+#comboEffect{
+  position:absolute;
+  top:20px;
+  right:30px;
+}
+
+.comboText{
+  color:gold;
+  font-size:2rem;
+  animation:comboPop 0.6s forwards;
+}
+
+@keyframes comboPop{
+  0%{transform:scale(0.5);opacity:0;}
+  50%{transform:scale(1.5);opacity:1;}
+  100%{transform:translateY(-40px);opacity:0;}
+}
+
 /* ランキング */
 #ranking{list-style:none;padding:0;}
 #ranking li{
@@ -86,9 +105,7 @@ body{
   align-items:center;
 }
 
-#result.hidden{
-  display:none !important;
-}
+#result.hidden{display:none !important;}
 
 .resultBox{
   background:#111;
