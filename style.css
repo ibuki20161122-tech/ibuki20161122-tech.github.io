@@ -1,105 +1,178 @@
-body {
-  margin: 0;
-  font-family: 'Orbitron', sans-serif;
-  text-align: center;
-  color: white;
-
-  /* 🌈 動く背景 */
-  background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #00c6ff);
-  background-size: 400% 400%;
-  animation: bgMove 10s ease infinite;
+/* =====================
+   全体
+===================== */
+body{
+  margin:0;
+  padding:0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
+  text-align:center;
 }
 
-@keyframes bgMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* =====================
+   タイトル
+===================== */
+h1{
+  margin-top:20px;
+  font-size:2.2rem;
+  letter-spacing:2px;
+  text-shadow:0 0 10px #00eaff;
 }
 
-.container {
-  margin-top: 40px;
+/* =====================
+   日本語
+===================== */
+#jpWord{
+  font-size:2rem;
+  margin-top:30px;
+  letter-spacing:3px;
 }
 
-.card {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  padding: 20px;
-  width: 90%;
-  max-width: 400px;
-  margin: auto;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+/* =====================
+   ローマ字表示
+===================== */
+#romaWord{
+  font-size:1.8rem;
+  margin:15px 0;
+  letter-spacing:2px;
+  min-height:40px;
 }
 
-#jpWord {
-  font-size: 30px;
-  margin-bottom: 10px;
+/* 入力済み（通常） */
+.correct{
+  color:#00e676;
+  text-shadow:0 0 8px #00e676;
 }
 
-#romaWord {
-  font-size: 20px;
-  letter-spacing: 2px;
+/* 金コンボ */
+.gold{
+  color:gold;
+  text-shadow:0 0 12px gold,0 0 20px orange;
 }
 
-/* 入力欄 */
-input {
-  padding: 12px;
-  font-size: 18px;
-  width: 90%;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
+/* 未入力 */
+.remaining{
+  color:#aaa;
 }
 
-/* ステータス */
-.stats {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
-  font-size: 14px;
+/* ミス */
+.wrong{
+  color:#ff5252;
+  text-shadow:0 0 8px red;
 }
 
-/* ボタン */
-button {
-  margin-top: 10px;
-  padding: 10px;
-  background: #00c853;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
+/* =====================
+   入力欄
+===================== */
+#input{
+  margin-top:20px;
+  font-size:1.5rem;
+  padding:10px;
+  width:250px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  text-align:center;
+  background:#222;
+  color:white;
+  box-shadow:0 0 10px #000 inset;
 }
 
-button:hover {
-  transform: scale(1.1);
+/* =====================
+   ステータス
+===================== */
+div{
+  margin-top:20px;
+  font-size:1.2rem;
+  letter-spacing:2px;
 }
 
-/* ===== 文字エフェクト ===== */
-
-.correct {
-  color: #00e676;
-  text-shadow: 0 0 10px #00e676, 0 0 20px #00e676;
-  animation: glowPop 0.2s;
+/* =====================
+   ボタン
+===================== */
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  font-size:1rem;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(45deg,#00eaff,#00c6ff);
+  color:black;
+  cursor:pointer;
+  transition:0.2s;
 }
 
-.wrong {
-  color: #ff5252;
+button:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 10px #00eaff;
 }
 
-.remaining {
-  color: #ccc;
+/* =====================
+   ランキング
+===================== */
+h2{
+  margin-top:30px;
 }
 
-@keyframes glowPop {
-  0% { transform: scale(1.4); }
-  100% { transform: scale(1); }
+#ranking{
+  list-style:none;
+  padding:0;
+  max-width:200px;
+  margin:0 auto;
 }
 
-/* ヒント */
-.hint {
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: 0.7;
+#ranking li{
+  background:rgba(255,255,255,0.1);
+  margin:5px 0;
+  padding:8px;
+  border-radius:8px;
+  backdrop-filter:blur(5px);
+}
+
+/* =====================
+   エフェクト（ポップ）
+===================== */
+.pop{
+  position:fixed;
+  font-size:30px;
+  color:#00e676;
+  pointer-events:none;
+  animation:pop 0.5s ease-out forwards;
+}
+
+@keyframes pop{
+  0%{opacity:1; transform:translateY(0);}
+  100%{opacity:0; transform:translateY(-40px);}
+}
+
+/* =====================
+   スマホ対応
+===================== */
+@media(max-width:600px){
+
+  h1{
+    font-size:1.6rem;
+  }
+
+  #jpWord{
+    font-size:1.5rem;
+  }
+
+  #romaWord{
+    font-size:1.3rem;
+  }
+
+  #input{
+    width:80%;
+    font-size:1.2rem;
+  }
+
+  div{
+    font-size:1rem;
+  }
+
+  button{
+    width:80%;
+  }
 }
