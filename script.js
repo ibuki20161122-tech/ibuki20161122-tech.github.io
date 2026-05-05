@@ -2,7 +2,12 @@
 // 単語
 // =====================
 const words = [
-  "りんご","かんじ","びょういん","がっこう","しゃしん","きょう","しゅくだい"
+  "ねこ","いぬ","ほん","やま","かわ",
+  "りんご","すし","てんき","かぞく","ともだち",
+  "しゃしん","じてんしゃ","がっこう","きょう","しゅくだい",
+  "びょういん","えんぴつ","けしごむ","でんしゃ","せんせい",
+  "ゆうえんち","どうぶつえん","しんかんせん","としょかん",
+  "ぷろぐらみんぐ","こんぴゅーたー","いんたーねっと"
 ];
 
 // =====================
@@ -24,10 +29,9 @@ const romaMap = {
  "ば":["ba"],"び":["bi"],"ぶ":["bu"],"べ":["be"],"ぼ":["bo"]
 };
 
-// 拗音
 const digraph = {
  "しゃ":["sha","sya"],"しゅ":["shu","syu"],"しょ":["sho","syo"],
- "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"], // ⭐kyou対応
+ "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"],
  "びゃ":["bya"],"びゅ":["byu"],"びょ":["byo"]
 };
 
@@ -40,7 +44,6 @@ function kanaToRoma(kana){
  for(let i=0;i<kana.length;i++){
   let c=kana[i];
 
-  // っ
   if(c==="っ"){
     let next=romaMap[kana[i+1]]||[""];
     let temp=[];
@@ -52,7 +55,6 @@ function kanaToRoma(kana){
     continue;
   }
 
-  // 拗音
   let pair=kana[i]+kana[i+1];
   if(digraph[pair]){
     res=combine(res,digraph[pair]);
@@ -73,16 +75,19 @@ function combine(a,b){
 }
 
 // =====================
-// ゲーム
+// ゲーム変数
 // =====================
 let current = {};
 let score = 0;
 let combo = 0;
+let time = 30;
+let level = 1;
+let timer;
 
+// DOM
 const input = document.getElementById("input");
 const jp = document.getElementById("jpWord");
 const roma = document.getElementById("romaWord");
-const effect = document.getElementById("effect");
 
 // =====================
 // スタート
@@ -97,6 +102,8 @@ document.addEventListener("keydown",e=>{
 function startGame(){
  score=0;
  combo=0;
+ time=30;
+ level=1;
 
  input.disabled=false;
  input.value="";
@@ -104,6 +111,9 @@ function startGame(){
 
  nextWord();
  updateUI();
+
+ clearInterval(timer);
+ timer = setInterval(updateTime,1000);
 }
 
 // =====================
@@ -120,33 +130,37 @@ function nextWord(){
 }
 
 // =====================
-// 入力処理（ここが重要）
+// 入力
 // =====================
 input.addEventListener("input",()=>{
  let val = input.value.toLowerCase();
 
- // ⭐一番近いパターンを探す
- let p = current.patterns.find(x => x.startsWith(val));
+ let p = current.patterns.find(x=>x.startsWith(val));
 
  if(p){
    showColored(val,p);
 
-   // 完全一致
    if(p === val){
      combo++;
-     score += 10 + combo * 2;
 
-     popEffect();
+     let add = 10 + combo * 2;
+
+     if(current.kana.length >= 6){
+       add += 10;
+       showEffect("💥 BONUS!");
+     }
+
+     score += add;
+
+     updateLevel();
+     popEffect(); // ⭐ランダム演出
 
      input.value="";
      nextWord();
    }
 
  }else{
-   // ⭐ここが改善ポイント
    combo = 0;
-
-   // 「1文字戻す」だけにする
    input.value = val.slice(0,-1);
  }
 
@@ -175,18 +189,91 @@ function showColored(inputStr,correct){
 }
 
 // =====================
-// エフェクト
+// ⭐ ランダムエフェクト（メイン）
 // =====================
 function popEffect(){
- effect.textContent="✨";
- effect.style.opacity=1;
- setTimeout(()=>effect.style.opacity=0,300);
+  const el = document.createElement("div");
+
+  el.textContent = "✨ " + combo;
+  el.style.position = "fixed";
+
+  // ⭐ランダム位置
+  el.style.left = (40 + Math.random()*20) + "%";
+  el.style.top = (30 + Math.random()*20) + "%";
+
+  el.style.fontSize = "30px";
+  el.style.color = "#00e676";
+  el.style.pointerEvents = "none";
+  el.style.opacity = "1";
+
+  document.body.appendChild(el);
+
+  setTimeout(()=>{
+    el.style.transition="0.5s";
+    el.style.opacity="0";
+    el.style.top = "20%";
+  },10);
+
+  setTimeout(()=>el.remove(),500);
 }
 
 // =====================
-// UI更新
+// テキストエフェクト
+// =====================
+function showEffect(text){
+  const el = document.createElement("div");
+
+  el.textContent = text;
+  el.style.position = "fixed";
+  el.style.left = "50%";
+  el.style.top = "25%";
+  el.style.transform = "translate(-50%,-50%)";
+  el.style.fontSize = "35px";
+  el.style.color = "#ffd700";
+
+  document.body.appendChild(el);
+
+  setTimeout(()=>{
+    el.style.opacity="0";
+  },500);
+
+  setTimeout(()=>el.remove(),800);
+}
+
+// =====================
+// レベル
+// =====================
+function updateLevel(){
+ let newLevel = Math.floor(score / 100) + 1;
+
+ if(newLevel > level){
+   level = newLevel;
+   time += 3;
+   showEffect("LEVEL UP!");
+ }
+}
+
+// =====================
+// タイマー
+// =====================
+function updateTime(){
+ time--;
+ if(time<=0) endGame();
+ updateUI();
+}
+
+function endGame(){
+ clearInterval(timer);
+ input.disabled=true;
+ jp.textContent="ゲーム終了！";
+}
+
+// =====================
+// UI
 // =====================
 function updateUI(){
  document.getElementById("score").textContent = score;
  document.getElementById("combo").textContent = combo;
+ document.getElementById("level").textContent = level;
+ document.getElementById("time").textContent = time;
 }
