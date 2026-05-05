@@ -7,19 +7,21 @@
 </head>
 <body>
 
-<!-- タイトル -->
 <div id="titleScreen">
   <h1>NEON CODE RUSH</h1>
   <p>Press SPACE to Start</p>
 </div>
 
-<!-- ゲーム -->
+<div id="startOverlay" class="hidden">
+  <div id="countdown">3</div>
+</div>
+
 <div id="gameScreen" class="hidden">
 
   <div id="hud">
     🏆 <span id="score">0</span>
     🔥 <span id="combo">0</span>
-    ⏱ <span id="time">30</span>
+    ⏱ <span id="time">30.0</span>
     📈 <span id="level">1</span>
   </div>
 
@@ -34,24 +36,16 @@
     ❌ Miss: <span id="miss">0</span>
   </div>
 
-  <div id="comboEffect"></div>
-
-  <h3>ランキング</h3>
-  <ol id="ranking"></ol>
-
 </div>
 
-<!-- 結果 -->
 <div id="result" class="hidden">
   <h2>RESULT</h2>
   <p id="finalScore"></p>
-  <div id="rankText"></div>
   <button onclick="closeResult()">戻る</button>
 </div>
 
-<!-- BGM -->
 <audio id="bgm" loop>
-  <source src="bgm.mp3" type="audio/mp3">
+  <source src="bgm.mp3">
 </audio>
 
 <script src="script.js"></script>
