@@ -7,46 +7,34 @@
 </head>
 <body>
 
+<!-- タイトル -->
 <div id="titleScreen">
   <h1>NEON CODE RUSH</h1>
   <p>Press SPACE to Start</p>
 </div>
 
-<div id="startOverlay" class="hidden">
-  <div id="countdown">3</div>
-</div>
-
+<!-- ゲーム -->
 <div id="gameScreen" class="hidden">
 
   <div id="hud">
     🏆 <span id="score">0</span>
     🔥 <span id="combo">0</span>
-    ⏱ <span id="time">30.0</span>
-    📈 <span id="level">1</span>
+    ⏱ <span id="time">30</span>
   </div>
 
   <p id="jpWord"></p>
   <p id="romaWord"></p>
 
-  <input id="input" disabled>
-
-  <div>
-    🎯 Accuracy: <span id="accuracy">100</span>%
-    ⚡ WPM: <span id="wpm">0</span>
-    ❌ Miss: <span id="miss">0</span>
-  </div>
+  <input id="input" type="text" disabled>
 
 </div>
 
+<!-- 結果 -->
 <div id="result" class="hidden">
   <h2>RESULT</h2>
   <p id="finalScore"></p>
-  <button onclick="closeResult()">戻る</button>
+  <button onclick="location.reload()">RESTART</button>
 </div>
-
-<audio id="bgm" loop>
-  <source src="bgm.mp3">
-</audio>
 
 <script src="script.js"></script>
 </body>
