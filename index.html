@@ -9,18 +9,18 @@
 
 <!-- タイトル -->
 <div id="titleScreen">
-  <h1 class="title">NEON CODE RUSH</h1>
-  <p class="subtitle">Press SPACE to Start</p>
+  <h1>NEON CODE RUSH</h1>
+  <p>Press SPACE to Start</p>
 </div>
 
 <!-- ゲーム -->
-<div id="gameScreen" class="container hidden">
+<div id="gameScreen" class="hidden">
   <p id="jpWord"></p>
   <p id="romaWord"></p>
 
   <input id="input" disabled>
 
-  <div class="status">
+  <div>
     🏆 <span id="score">0</span>
     ⏱ <span id="time">30</span>
     📈 <span id="level">1</span>
@@ -29,20 +29,16 @@
 
   <div id="comboEffect"></div>
 
-  <h2>🏆 ランキング</h2>
+  <h3>ランキング</h3>
   <ol id="ranking"></ol>
 </div>
 
 <!-- 結果 -->
 <div id="result" class="hidden">
-  <div class="resultBox">
-    <h2>RESULT</h2>
-    <p id="finalScore"></p>
-    <button onclick="closeResult()">閉じる</button>
-  </div>
+  <h2>RESULT</h2>
+  <p id="finalScore"></p>
+  <button onclick="closeResult()">閉じる</button>
 </div>
-
-<div id="version"></div>
 
 <script src="script.js"></script>
 </body>
