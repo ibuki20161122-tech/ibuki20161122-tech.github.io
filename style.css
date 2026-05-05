@@ -9,6 +9,39 @@ body{
   height:100vh;
 }
 
+/* タイトル */
+#titleScreen{
+  position:fixed;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+}
+
+.title{
+  font-size:4rem;
+  color:#00eaff;
+  text-shadow:0 0 40px #00eaff;
+  animation:glow 2s infinite alternate;
+}
+
+.subtitle{
+  animation:blink 1s infinite;
+}
+
+@keyframes glow{
+  from{ text-shadow:0 0 10px #00eaff;}
+  to{ text-shadow:0 0 60px #00eaff;}
+}
+
+@keyframes blink{
+  50%{opacity:0.3;}
+}
+
+/* コンテナ */
 .container{
   width:800px;
   padding:40px;
@@ -18,9 +51,18 @@ body{
   text-align:center;
 }
 
+/* テキスト */
 #jpWord{font-size:2.5rem;}
 #romaWord{font-size:2rem;letter-spacing:3px;min-height:50px;}
 
+.correct{color:#00ff88;text-shadow:0 0 20px #00ff88;}
+.gold{color:gold;text-shadow:0 0 20px gold;}
+.remaining{color:#555;}
+.wrong{color:red;}
+
+#romaWord span{transition:0.1s;}
+
+/* 入力 */
 #input{
   width:100%;
   font-size:1.8rem;
@@ -32,20 +74,33 @@ body{
   color:white;
 }
 
-.correct{
-  color:#00ff88;
-  text-shadow:0 0 20px #00ff88;
-}
-.gold{
-  color:gold;
-  text-shadow:0 0 20px gold;
-}
-.remaining{color:#555;}
-.wrong{color:red;}
-
-#romaWord span{transition:0.1s;}
-
+/* ランキング */
 #ranking{list-style:none;padding:0;}
+#ranking li{
+  background:rgba(255,255,255,0.1);
+  margin:5px;
+  padding:8px;
+  border-radius:8px;
+}
+
+/* 結果 */
+#result{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.resultBox{
+  background:#111;
+  padding:30px;
+  border-radius:15px;
+}
+
+/* その他 */
+.hidden{display:none;}
 
 #version{
   position:fixed;
