@@ -2,32 +2,34 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Typing Game DX</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>⌨️ Typing Game DX</h1>
+<div class="container">
 
-<p id="jpWord">スペースでスタート</p>
-<p id="romaWord"></p>
+  <h1>⌨️ Typing Game DX</h1>
 
-<input id="input" disabled>
+  <p id="jpWord">スペースでスタート</p>
+  <p id="romaWord"></p>
 
-<div>
-🏆 <span id="score">0</span>
-⏱ <span id="time">30</span>
-📈 <span id="level">1</span>
-🔥 <span id="combo">0</span>
+  <input id="input" disabled>
+
+  <div class="status">
+    🏆 <span id="score">0</span>
+    ⏱ <span id="time">30</span>
+    🔥 <span id="combo">0</span>
+  </div>
+
+  <h2>🏆 ランキング</h2>
+  <ol id="ranking"></ol>
+
+  <button onclick="startGame()">スタート</button>
+
 </div>
 
-<h2>🏆 ランキング</h2>
-<ol id="ranking"></ol>
-
-<div id="version">v1.0.0</div>
-
-<button onclick="startGame()">スタート</button>
+<div id="version">v1.1.0</div>
 
 <script src="script.js"></script>
 </body>
