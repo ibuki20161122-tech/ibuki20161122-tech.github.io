@@ -1,92 +1,90 @@
-const VERSION = "v1.0.0";
-
+const VERSION = "v1.1.0";
 document.getElementById("version").textContent = VERSION;
 
-// 単語
-const words=["ねこ","いぬ","りんご","しゅくだい","えんぴつ","ぷろぐらみんぐ"];
+const words = [
+ "ねこ","いぬ","りんご","しゅくだい","えんぴつ","ぷろぐらみんぐ"
+];
 
-// 簡易ローマ字（安定版）
-function kanaToRoma(k){
- return {
-  "ねこ":"neko",
-  "いぬ":"inu",
-  "りんご":"ringo",
-  "しゅくだい":"shukudai",
-  "えんぴつ":"enpitsu",
-  "ぷろぐらみんぐ":"puroguramingu"
- }[k];
-}
+// シンプルローマ字（安定）
+const roma = {
+ "ねこ":"neko",
+ "いぬ":"inu",
+ "りんご":"ringo",
+ "しゅくだい":"shukudai",
+ "えんぴつ":"enpitsu",
+ "ぷろぐらみんぐ":"puroguramingu"
+};
 
-// 変数
-let current="";
-let display="";
-let score=0,combo=0,time=30,timer;
+let current="",score=0,combo=0,time=30,timer;
 
-const input=document.getElementById("input");
-const jp=document.getElementById("jpWord");
-const roma=document.getElementById("romaWord");
+const input = document.getElementById("input");
+const jp = document.getElementById("jpWord");
+const romaEl = document.getElementById("romaWord");
 
-// スタート
+// スペース開始
 document.addEventListener("keydown",e=>{
  if(e.code==="Space") startGame();
 });
 
 function startGame(){
- score=0;combo=0;time=30;
+ score=0; combo=0; time=30;
  input.disabled=false;
  input.value="";
  input.focus();
  nextWord();
+ updateUI();
  clearInterval(timer);
  timer=setInterval(updateTime,1000);
 }
 
-// 次
 function nextWord(){
- current=words[Math.floor(Math.random()*words.length)];
- display=kanaToRoma(current);
- jp.textContent=current;
- showColored("",display);
+ current = words[Math.floor(Math.random()*words.length)];
+ jp.textContent = current;
+ showColored("", roma[current]);
 }
 
 // 入力
 input.addEventListener("input",()=>{
- let val=input.value.toLowerCase();
+ let val = input.value.toLowerCase();
+ let correct = roma[current];
 
- input.classList.add("flash");
- setTimeout(()=>input.classList.remove("flash"),100);
+ if(correct.startsWith(val)){
+   showColored(val, correct);
 
- if(display.startsWith(val)){
-   showColored(val,display);
-
-   if(val===display){
+   if(val === correct){
      combo++;
-     score+=10+combo*2;
+     score += 10 + combo * 2;
      input.value="";
      nextWord();
    }
  }else{
    combo=0;
-   input.value=val.slice(0,-1);
+   input.value = val.slice(0,-1);
  }
 
  updateUI();
 });
 
-// 表示
+// 光る表示
 function showColored(inputStr, correct){
  let html="";
- let gold=combo>=10;
+ let gold = combo >= 10;
 
  for(let i=0;i<correct.length;i++){
-  if(i<inputStr.length){
-    html+=`<span class="${gold?"gold":"correct"}">${correct[i]}</span>`;
-  }else{
-    html+=`<span class="remaining">${correct[i]}</span>`;
+  let cls="remaining";
+
+  if(i < inputStr.length){
+    if(inputStr[i] === correct[i]){
+      cls = gold ? "gold" : "correct";
+    }else{
+      cls = "wrong";
+    }
   }
+
+  html += `<span class="${cls}">${correct[i]}</span>`;
  }
 
- roma.innerHTML=html;
+ romaEl.innerHTML = html;
 }
 
 // タイマー
@@ -102,7 +100,7 @@ function endGame(){
  clearInterval(timer);
  input.disabled=true;
  saveScore(score);
- alert("終了！スコア: "+score+" / "+VERSION);
+ alert("スコア: "+score+" / "+VERSION);
 }
 
 // ランキング
@@ -133,3 +131,13 @@ function updateUI(){
  document.getElementById("combo").textContent=combo;
  document.getElementById("time").textContent=time;
 }
+
+// 波紋
+document.addEventListener("click",(e)=>{
+ let r=document.createElement("div");
+ r.className="ripple";
+ r.style.left=e.clientX+"px";
+ r.style.top=e.clientY+"px";
+ document.body.appendChild(r);
+ setTimeout(()=>r.remove(),600);
+});
