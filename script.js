@@ -1,70 +1,54 @@
-const VERSION="v2.0.0";
+const VERSION="v3.0.0";
 document.getElementById("version").textContent=VERSION;
 
-// ===== 単語 =====
-const words=["ねこ","いぬ","りんご","しゅくだい","えんぴつ","ぷろぐらみんぐ","こんぴゅーたー"];
+// ===== 単語レベル =====
+const wordLevels=[
+ ["ねこ","いぬ","すし"],
+ ["りんご","えんぴつ"],
+ ["しゅくだい","せんせい"],
+ ["ぷろぐらみんぐ","こんぴゅーたー"]
+];
 
-// ===== ローマ字辞書 =====
+// ===== ローマ字辞書（主要） =====
 const romaMap={
  "あ":["a"],"い":["i"],"う":["u"],"え":["e"],"お":["o"],
  "か":["ka"],"き":["ki"],"く":["ku"],"け":["ke"],"こ":["ko"],
  "さ":["sa"],"し":["shi","si"],"す":["su"],"せ":["se"],"そ":["so"],
  "た":["ta"],"ち":["chi","ti"],"つ":["tsu","tu"],"て":["te"],"と":["to"],
  "な":["na"],"に":["ni"],"ぬ":["nu"],"ね":["ne"],"の":["no"],
- "は":["ha"],"ひ":["hi"],"ふ":["fu","hu"],"へ":["he"],"ほ":["ho"],
+ "は":["ha"],"ひ":["hi"],"ふ":["fu"],"へ":["he"],"ほ":["ho"],
  "ま":["ma"],"み":["mi"],"む":["mu"],"め":["me"],"も":["mo"],
  "や":["ya"],"ゆ":["yu"],"よ":["yo"],
  "ら":["ra"],"り":["ri"],"る":["ru"],"れ":["re"],"ろ":["ro"],
  "わ":["wa"],"を":["wo"],
  "ん":["n","nn"],
- "が":["ga"],"ぎ":["gi"],"ぐ":["gu"],"げ":["ge"],"ご":["go"],
- "ざ":["za"],"じ":["ji","zi"],"ず":["zu"],"ぜ":["ze"],"ぞ":["zo"],
- "ば":["ba"],"び":["bi"],"ぶ":["bu"],"べ":["be"],"ぼ":["bo"],
  "ぱ":["pa"],"ぴ":["pi"],"ぷ":["pu"],"ぺ":["pe"],"ぽ":["po"],
  "ー":["-"]
 };
 
 const digraph={
  "しゃ":["sha","sya"],"しゅ":["shu","syu"],"しょ":["sho","syo"],
- "ちゃ":["cha"],"ちゅ":["chu"],"ちょ":["cho"],
  "きゃ":["kya"],"きゅ":["kyu"],"きょ":["kyo"],
  "ぴゃ":["pya"],"ぴゅ":["pyu"],"ぴょ":["pyo"]
 };
 
 // ===== 変換 =====
-function kanaToRoma(kana){
+function kanaToRoma(k){
  let res=[""];
- for(let i=0;i<kana.length;i++){
-  let c=kana[i];
+ for(let i=0;i<k.length;i++){
+  let c=k[i];
 
-  // っ
-  if(c==="っ"){
-    let next=romaMap[kana[i+1]]||[""];
+  if(c==="ー"){
     let tmp=[];
     res.forEach(r=>{
-      next.forEach(n=>tmp.push(r+n[0]));
+      let last=r.slice(-1);
+      if("aeiou".includes(last)) tmp.push(r+last);
     });
     res=tmp;
     continue;
   }
 
-  // ん
-  if(c==="ん"){
-    let next=romaMap[kana[i+1]]||[""];
-    let tmp=[];
-    res.forEach(r=>{
-      next.forEach(n=>{
-        tmp.push(r+"n"+n);
-        tmp.push(r+"nn"+n);
-      });
-    });
-    res=tmp;
-    i++;
-    continue;
-  }
-
-  // 拗音
-  let pair=kana[i]+kana[i+1];
+  let pair=k[i]+k[i+1];
   if(digraph[pair]){
     res=combine(res,digraph[pair]);
     i++;
@@ -83,15 +67,21 @@ function combine(a,b){
 }
 
 // ===== ゲーム =====
-let current={},display="";
-let score=0,combo=0,time=30,level=1,timer;
+let score=0,combo=0,time=30,level=1,timer,lastWord="";
 
 const input=document.getElementById("input");
 const jp=document.getElementById("jpWord");
 const roma=document.getElementById("romaWord");
 
+// タイトル
 document.addEventListener("keydown",e=>{
- if(e.code==="Space") startGame();
+ if(e.code==="Space"){
+   if(!document.getElementById("titleScreen").classList.contains("hidden")){
+     document.getElementById("titleScreen").classList.add("hidden");
+     document.getElementById("gameScreen").classList.remove("hidden");
+     startGame();
+   }
+ }
 });
 
 function startGame(){
@@ -104,18 +94,33 @@ function startGame(){
  timer=setInterval(updateTime,1000);
 }
 
+// レベル
+function updateLevel(){
+ level=Math.floor(score/50)+1;
+ if(level>wordLevels.length) level=wordLevels.length;
+}
+
+// 次の単語
 function nextWord(){
- let k=words[Math.floor(Math.random()*words.length)];
+ updateLevel();
+ let pool=wordLevels[level-1];
+ let k;
+ do{
+  k=pool[Math.floor(Math.random()*pool.length)];
+ }while(k===lastWord);
+ lastWord=k;
+
  let p=kanaToRoma(k);
  current={kana:k,patterns:p};
  display=p[0];
+
  jp.textContent=k;
  show("",display);
 }
 
+// 入力
 input.addEventListener("input",()=>{
  let val=input.value.toLowerCase();
-
  let valid=current.patterns.filter(p=>p.startsWith(val));
 
  if(valid.length>0){
@@ -136,15 +141,14 @@ input.addEventListener("input",()=>{
  updateUI();
 });
 
+// 表示
 function show(inputStr,correct){
  let html="";
  let gold=combo>=10;
 
  for(let i=0;i<correct.length;i++){
   let cls="remaining";
-  if(i<inputStr.length){
-    cls=gold?"gold":"correct";
-  }
+  if(i<inputStr.length) cls=gold?"gold":"correct";
   html+=`<span class="${cls}">${correct[i]}</span>`;
  }
  roma.innerHTML=html;
@@ -153,13 +157,21 @@ function show(inputStr,correct){
 // タイマー
 function updateTime(){
  time--;
- if(time<=0){
-   clearInterval(timer);
-   input.disabled=true;
-   saveScore(score);
-   alert("スコア："+score+" / "+VERSION);
- }
+ if(time<=0) endGame();
  updateUI();
+}
+
+function endGame(){
+ clearInterval(timer);
+ input.disabled=true;
+ saveScore(score);
+ document.getElementById("finalScore").textContent="Score: "+score;
+ document.getElementById("result").classList.remove("hidden");
+}
+
+function closeResult(){
+ document.getElementById("result").classList.add("hidden");
+ document.getElementById("titleScreen").classList.remove("hidden");
 }
 
 // ランキング
