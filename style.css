@@ -1,7 +1,7 @@
 body{
   margin:0;
-  background:#000;
-  color:#0ff;
+  background:#0b0f14;
+  color:white;
   font-family:sans-serif;
   text-align:center;
 }
@@ -10,33 +10,75 @@ body{
 #titleScreen{
   position:absolute;
   width:100%;
-  top:40%;
+  top:35%;
 }
 
+.title{
+  font-size:3rem;
+  color:#00eaff;
+}
+
+.subtitle{
+  opacity:0.7;
+}
+
+#startBtn{
+  margin-top:20px;
+  font-size:1.3rem;
+  padding:12px 25px;
+  border:none;
+  border-radius:10px;
+  background:#00eaff;
+}
+
+/* ゲーム */
 .hidden{display:none;}
 
-/* 単語 */
-#jpWord{font-size:40px;}
-#romaWord{font-size:30px;}
+#jpWord{font-size:2rem;}
+#romaWord{font-size:1.5rem;letter-spacing:2px;}
 
-/* 色 */
-.correct{color:#0f0;}
-.remaining{color:#555;}
+.correct{color:#00ff88;}
 .gold{color:gold;}
+.remaining{color:#555;}
+
+#input{
+  width:80%;
+  font-size:1.5rem;
+  padding:10px;
+  margin-top:15px;
+}
 
 /* コンボ */
 #comboEffect{
   position:absolute;
   top:10px;
-  right:20px;
+  right:10px;
 }
 
 .comboText{
   color:gold;
-  animation:pop 0.5s;
+  animation:pop 0.6s;
 }
 
 @keyframes pop{
-  from{transform:scale(0);}
-  to{transform:scale(1.5);}
+  0%{transform:scale(0);}
+  100%{transform:scale(1.5);}
+}
+
+/* 結果 */
+#result{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#result.hidden{display:none !important;}
+
+.resultBox{
+  background:#111;
+  padding:20px;
 }
