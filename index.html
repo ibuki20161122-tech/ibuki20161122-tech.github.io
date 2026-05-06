@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEON CODE RUSH</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -9,8 +10,9 @@
 
 <!-- タイトル -->
 <div id="titleScreen">
-  <h1>NEON CODE RUSH</h1>
-  <p>Press SPACE to Start</p>
+  <h1 class="title">NEON CODE RUSH</h1>
+  <p class="subtitle">Press SPACE or TAP START</p>
+  <button id="startBtn">▶ START</button>
 </div>
 
 <!-- ゲーム -->
@@ -20,7 +22,7 @@
 
   <input id="input" disabled>
 
-  <div>
+  <div class="status">
     🏆 <span id="score">0</span>
     ⏱ <span id="time">30</span>
     📈 <span id="level">1</span>
@@ -29,15 +31,17 @@
 
   <div id="comboEffect"></div>
 
-  <h3>ランキング</h3>
+  <h3>🏆 ランキング</h3>
   <ol id="ranking"></ol>
 </div>
 
 <!-- 結果 -->
 <div id="result" class="hidden">
-  <h2>RESULT</h2>
-  <p id="finalScore"></p>
-  <button onclick="closeResult()">閉じる</button>
+  <div class="resultBox">
+    <h2>RESULT</h2>
+    <p id="finalScore"></p>
+    <button onclick="closeResult()">閉じる</button>
+  </div>
 </div>
 
 <script src="script.js"></script>
